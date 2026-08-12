@@ -71,31 +71,6 @@ The dataset used in this project is the **Heart Disease Dataset** from Kaggle:
 Dataset source:  
 https://www.kaggle.com/datasets/neurocipher/heartdisease
 
-## Model Results
-
-### Performance Metrics
-
-| Metric | Train | Test |
-|--------|-------|------|
-| Accuracy | 76.7% | 85.2% |
-| Precision | 78.6% | 85.3% |
-| Recall | 65.5% | 80.6% |
-| F1-Score | 71.4% | 82.9% |
-
-### Feature Importance (Learned Weights)
-
-| Feature | Weight | Interpretation |
-|---------|--------|----------------|
-| num_vessels | +0.89 | Strongest predictor - more blocked vessels = higher risk |
-| st_depression | +0.62 | Higher ST depression indicates cardiac ischemia |
-| max_hr | -0.65 | Lower max heart rate = higher risk |
-| bp | +0.12 | Higher blood pressure = slightly higher risk |
-| cholesterol | +0.11 | Higher cholesterol = slightly higher risk |
-| age | -0.14 | Age effect captured by other features |
-
-## Running the tests
-
-This project does not include automated unit tests. Validation is performed through numerical metrics and visual inspection, which is standard for exploratory machine learning notebooks.
 
 ### Break down into end-to-end tests
 
@@ -105,11 +80,25 @@ End-to-end validation consists of:
 - Verifying that the cost function decreases over training iterations  
 - Confirming reasonable accuracy, precision, recall, and F1-score on train and test sets  
 
-Example:
+PROOF OF THIS
 
-```
-Run all cells and verify that the training loss decreases and test accuracy is above random baseline.
-```
+<img width="729" height="599" alt="Captura de pantalla 2026-02-03 a la(s) 11 37 03 p m" src="https://github.com/user-attachments/assets/e91f0f84-e964-4a3c-b877-989465b795c0" />
+
+
+<img width="795" height="657" alt="Captura de pantalla 2026-02-03 a la(s) 11 37 32 p m" src="https://github.com/user-attachments/assets/c49d729f-4ddb-4362-8c8d-ccd01d1bde3d" />
+
+
+<img width="847" height="649" alt="Captura de pantalla 2026-02-03 a la(s) 11 37 44 p m" src="https://github.com/user-attachments/assets/8c0cebd5-5624-49c3-8d29-3259c47951ad" />
+
+
+<img width="844" height="707" alt="Captura de pantalla 2026-02-03 a la(s) 11 37 53 p m" src="https://github.com/user-attachments/assets/cd99cd04-3826-4d6c-8b31-248daf7cac01" />
+
+
+<img width="852" height="394" alt="Captura de pantalla 2026-02-03 a la(s) 11 38 06 p m" src="https://github.com/user-attachments/assets/07bbac18-40ee-4f65-b836-b80fe605d988" />
+
+All tested λ values (0 to 1) maintain **85.2% test accuracy** and **82.9% F1-score**
+- The model is not overfitting significantly, so regularization has minimal impact
+  
 
 ### And coding style tests
 
@@ -118,12 +107,6 @@ Coding style validation focuses on:
 - Explicit implementation of sigmoid, cost function, and gradient descent  
 - Clear separation between data preprocessing, model logic, and evaluation  
 - Proper use of NumPy vectorized operations  
-
-Example:
-
-```
-Review the notebook to ensure no high-level ML libraries are imported and gradients are computed manually.
-```
 
 ## Deployment
 
@@ -211,6 +194,16 @@ This notebook implements logistic regression from scratch for heart disease pred
 | `cholesterol` | +0.11 | Higher cholesterol → Slightly higher risk |
 | `age` | -0.14 | Age effect captured by other features |
 
+### Performance Metrics
+
+| Metric | Train | Test |
+|--------|-------|------|
+| Accuracy | 76.7% | 85.2% |
+| Precision | 78.6% | 85.3% |
+| Recall | 65.5% | 80.6% |
+| F1-Score | 71.4% | 82.9% |
+
+
 ### Clinical Interpretation
 
 The model aligns with medical knowledge:
@@ -218,17 +211,36 @@ The model aligns with medical knowledge:
 - **ST depression** during exercise stress tests indicates cardiac ischemia
 - **Lower maximum heart rate** suggests poor cardiovascular fitness
 
-## Contributing
+### Sample Inference Test
 
-This project is developed for academic purposes. External contributions are not expected.
+I accessed the AWS console and opened the Amazon SageMaker Studio service. From there, I created a new notebook by selecting the Python 3 kernel, which already includes the necessary libraries such as NumPy
 
-## Versioning
+<img width="979" height="93" alt="Captura de pantalla 2026-02-03 a la(s) 11 18 38 p m" src="https://github.com/user-attachments/assets/e1a38484-f9a7-4622-a651-b2395def0067" />
 
-Versioning is not applied, as this project corresponds to a single academic deliverable.
+
+Once the notebook was created, copy the code developed for logistic regression. This code includes the model functions, training, and prediction. All cells ran correctly within the SageMaker environment. After training the model, the final parameters were obtained: the weight vector (w) and the bias (b). These values represent the trained model and are sufficient to make predictions on new data
+
+<img width="256" height="117" alt="Captura de pantalla 2026-02-03 a la(s) 11 20 14 p m" src="https://github.com/user-attachments/assets/bc57c445-f745-483a-967a-aef8e94159ff" />
+
+To simulate an inference endpoint, I defined a function that receives patient data and returns the probability of heart disease using the sigmoid function. This function represents the basic behavior of a SageMaker endpoint.
+
+The model was then tested with a sample patient using normalized feature values. When the prediction function was run, the model returned a probability of 0.81, indicating an 81% probability of heart disease.
+
+
+<img width="1235" height="517" alt="Captura de pantalla 2026-02-03 a la(s) 11 12 54 p m" src="https://github.com/user-attachments/assets/e86b42a6-9f86-4ec4-9a09-c13d97fb02c0" />
+
+- The model returns a probability rather than a class directly
+
+
+- Input: Age = 60, Cholesterol = 300 (normalized input values)
+- Output: Predicted probability of heart disease ≈ 0.81
+
+Implementation in Amazon SageMaker allowed the model to be run in a managed environment based on JupyterLab, facilitating training and inference without additional configurations. The model can be used for real-time risk scoring, returning interpretable probabilities for individual patients. In tests with simulated data, the system responded immediately, showing negligible latency in the notebook environment
+
 
 ## Authors
 
-* **Valentina Gutiérrez**
+* **Valentina Gutiérrez** – Initial work and implementation  
 
 ## License
 
